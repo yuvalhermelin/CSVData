@@ -5,5 +5,14 @@
  *
  */
 public class CSVData {
+	private double[][] data;
+	private String[] columnNames;
 
+	public static CSVData readCSVFile(String fileName, int numLinesToIgnore, String[] columnNames) {
+		return null;
+	}
+
+	public static CSVData readCSVFile(String fileName, int numLinesToIgnore) {
+		return null;
+	}
 }
