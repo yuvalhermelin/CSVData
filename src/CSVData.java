@@ -1,3 +1,9 @@
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Scanner;
+
 /***
  * A class to read/write numerical CSV files and allow easy access
  * 
@@ -7,6 +13,17 @@
 public class CSVData {
 	private double[][] data;
 	private String[] columnNames;
+
+	public static void main(String[] args) {
+		CSVData data = CSVData.readCSVFile("/Users/yuvalhermelin/Downloads/GyroTest2out.csv", 0);
+		for (int i = 0; i < data.data.length; i++) {
+			System.out.println(Arrays.toString(data.getRow(i)));
+		}
+	}
+
+	public CSVData(int x, int y) {
+		data = new double[x][y];
+	}
 
 	/***
 	 * Read a file given the fileName. Ignore the first "numlinesToIgnore" lines
@@ -22,7 +39,18 @@ public class CSVData {
 	 * @return A new CSVData object with all the data read from the file
 	 */
 	public static CSVData readCSVFile(String fileName, int numLinesToIgnore, String[] columnNames) {
-		return null;
+		ArrayList<String> file = readFileAsString(fileName);
+		CSVData toReturn = new CSVData(file.size(), file.get(0).length());
+		toReturn.columnNames = columnNames;
+
+		for (int i = 0; i < file.size(); i++) {
+			String[] row = file.get(i).split(",");
+			double[] rowConverted = new double[row.length];
+			for (int x = 0; x < row.length; x++)
+				rowConverted[x] = Double.valueOf(row[x]);
+			toReturn.setRow(i, rowConverted);
+		}
+		return toReturn;
 	}
 
 	/***
@@ -36,7 +64,32 @@ public class CSVData {
 	 * @return A new CSVData object with all the data read from the file
 	 */
 	public static CSVData readCSVFile(String fileName, int numLinesToIgnore) {
-		return null;
+		ArrayList<String> file = readFileAsString(fileName);
+		CSVData toReturn = new CSVData(file.size(), file.get(0).length());
+		toReturn.columnNames = file.get(0).split(",");
+
+		file.remove(0);
+		for (int i = 0; i < file.size(); i++) {
+			String[] row = file.get(i).split(",");
+			double[] rowConverted = new double[row.length];
+			for (int x = 0; x < row.length; x++)
+				rowConverted[x] = Double.valueOf(row[x]);
+			toReturn.setRow(i, rowConverted);
+		}
+		return toReturn;
+	}
+
+	public static ArrayList<String> readFileAsString(String filepath) {
+		ArrayList<String> output = new ArrayList<>();
+		try (Scanner scanner = new Scanner(new File(filepath))) {
+			while (scanner.hasNext()) {
+				String line = scanner.nextLine();
+				output.add(line);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return output;
 	}
 
 	/***
@@ -57,8 +110,11 @@ public class CSVData {
 	 *            The index of the column to get
 	 * @return The colum at columnIndex
 	 */
-	public double[] getColumn(int collumIndex) {
-		return null;
+	public double[] getColumn(int columnIndex) {
+		double[] column = new double[data.length];
+		for (int i = 0; i < data.length; i++)
+			column[i] = data[i][columnIndex];
+		return column;
 	}
 
 	/***
@@ -69,7 +125,11 @@ public class CSVData {
 	 * @return The rows at all the given indexes.
 	 */
 	public double[][] getRows(int[] rowIndexes) {
-		return null;
+		double[][] rowsToReturn = new double[rowIndexes.length][data[0].length];
+		for (int i = 0; i < rowIndexes.length; i++)
+			rowsToReturn[i] = getRow(rowIndexes[i]);
+
+		return rowsToReturn;
 	}
 
 	/***
@@ -79,8 +139,11 @@ public class CSVData {
 	 *            All of the indexes of the columns to get.
 	 * @return All of the columns at the given indexes.
 	 */
-	public double[][] getColumns(int[] ColumnIndexes) {
-		return null;
+	public double[][] getColumns(int[] columnIndexes) {
+		double[][] columnsToReturn = new double[columnIndexes.length][data.length];
+		for (int i = 0; i < columnIndexes.length; i++)
+			columnsToReturn[i] = getColumn(columnIndexes[i]);
+		return columnsToReturn;
 	}
 
 	/***
@@ -94,6 +157,7 @@ public class CSVData {
 	 *            The value to set at (x,y)
 	 */
 	public void setIndividualValue(int row, int column, double value) {
+		data[row][column] = value;
 
 	}
 
@@ -106,7 +170,7 @@ public class CSVData {
 	 *            The new row value to set the row at "rowIndex" to.
 	 */
 	public void setRow(int rowIndex, double[] rowValues) {
-
+		data[rowIndex] = rowValues;
 	}
 
 	/***
@@ -118,7 +182,8 @@ public class CSVData {
 	 *            The values to override the current column with.
 	 */
 	public void setColumn(int columnIndex, double[] columnValues) {
-
+		for (int i = 0; i < data.length; i++)
+			data[i][columnIndex] = columnValues[i];
 	}
 
 	/***
@@ -127,7 +192,7 @@ public class CSVData {
 	 * @return A string array containing the titles of all the columns.
 	 */
 	public String[] getTitles() {
-		return null;
+		return columnNames;
 	}
 
 	/***
