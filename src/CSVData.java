@@ -71,6 +71,7 @@ public class CSVData {
 		file.remove(0);
 		for (int i = 0; i < file.size(); i++) {
 			String[] row = file.get(i).split(",");
+			
 			double[] rowConverted = new double[row.length];
 			for (int x = 0; x < row.length; x++)
 				rowConverted[x] = Double.valueOf(row[x]);
